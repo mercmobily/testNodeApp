@@ -58,7 +58,7 @@ router.get('/serve', function(req, res, next) {
 
 router.get('/stop', function(req, res, next) {
 	globals.serve = false;
-	r245es.redirect('/');
+	res.redirect('/');
 });
 
 router.post('/ISI_ClickWeb/ISIServlet', function(req, res, next ){
