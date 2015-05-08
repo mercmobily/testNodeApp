@@ -9,8 +9,8 @@ SERVER
   [X] Make sure logs for sent forms appear too
   [X] Add link to delete all logs and start over
   [X] Make sure app is all good and it installs
-  [ ] Write little deployment script and deploy
-  [ ] Send Alessandro the links
+  [X] Write little deployment script and deploy
+  [X] Send Alessandro the links
 
 CLIENT
   [ ] Work out switch for security off, chrome switch
