@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html style="height: 100%" xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+      <meta http-equiv="Cache-Control" content="no-cache" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <title>The title</title>
+   </head>
+
+   <script type="text/javascript">
+
+  output = '';
+  function consolelog(){
+    for( var i = 0; i < arguments.length; i ++ ){
+      var o = arguments[ i ];
+
+      var o2;
+
+      if( typeof o === 'object' ){
+        if( o.nodeName ){
+      
+          var tmp = document.createElement("div");
+          tmp.appendChild( o.cloneNode(true) );
+          o2 = tmp.innerHTML;
+
+        } else {
+          try {
+            o = JSON.stringify( o );
+          } catch( e ){
+
+            try {
+              o2 = o.toString() + ( o.length ? ' ' + o.length : '' );
+
+            } catch( e ){
+              o2 = '[???]';
+            }
+
+          }
+        }
+      } else {
+        o2 = o;
+      } 
+
+      output = output + ' ' + o2;
+    }
+    output += '\n';
+    console.log.apply( console, arguments );
+  } 
+
+  window.onload = function(){
+
+   	function atLeastTen(){
+
+   	  for( var i = 0; i < arguments.length; i ++) {
+   			var v = arguments[ i ];
+   			consolelog("CHECKING V:", v );
+   			if( v < 10 ) return false;
+   		}	
+   		return true;
+   	}
+
+   	function elementVisible( element ){
+ 			var rect = element.getBoundingClientRect();
+
+      consolelog("CHECKING IF ", element, "IS VISIBLE" );
+ 			consolelog("RECT:", rect );
+   		if( atLeastTen( element.clientWidth, element.clientHeight, element.offsetWidth, element.offsetHeight, element.scrollWidth, element.scrollHeight, rect.height, rect.width ) && element.style.visibility !== 'hidden'){
+   			consolelog("ELEMENT IS VISIBLE!");
+   				return true;
+   		} else {
+   			consolelog("ELEMENT IS INVISIBLE!");   			
+   			return false;
+   		}
+   	}
+
+   	function attemptSubmit(){
+   		consolelog("ATTEMPTING SUBMIT!");
+
+      //var formsCollection = iframeNode.contentDocument.getElementsByTagName("form");
+      var formsCollection = iframeNode.contentDocument.forms;
+
+      consolelog( "COLLECTIONS: ", formsCollection);
+
+      // Go through each form, and skip the bad ones (one of the sizes is 0, or visibility is hidden)
+   		for(var i = 0; i < formsCollection.length; i ++){
+   			var form = formsCollection[ i ];
+
+        debugger;
+   			consolelog("FORM: ", form.id, form.name, form.action );
+
+   			if( elementVisible( form )){
+
+   				consolelog("FORM IS VISIBLE!");   		  	
+
+  				var inputsCollection = form.getElementsByTagName( 'input' );
+
+          // Go through each form, and skip the bad ones (one of the sizes is 0, or visibility is hidden)
+   	    	for(var j = 0; j < inputsCollection.length; j ++){
+   			    var input = inputsCollection[ j ];
+
+     				consolelog("INPUT:", input );
+
+     				if( elementVisible( input ) && input.type === 'text' ){
+     					consolelog("INPUT IS GOOD!");
+     					input.value = formNode.code.value;
+     					form.submit();
+     				}
+
+   				}
+   			
+   		  } else {
+   				consolelog("FORM IS INVISIBLE!");   		  	
+   		  }
+
+   		};
+   	};
+
+
+   	var status = "EMPTY"; // FIRST, RELOADING, CHANGED
+   	var contents = '';
+
+    consolelog("MAIN contents loaded!");
+
+    //iframeNode.addEventListener('DOMFrameContentLoaded', function(){
+    iframeNode.addEventListener('load', function(){
+    //iframeNode.addEventListener('DOMContentLoaded', function(){
+    //iFrameReady( iframeNode, function(){
+
+    	consolelog("IFRAME LOADED");
+
+    	switch( status ){
+
+    		case 'EMPTY':
+    		  // Nothing should happen here
+    		break;
+
+    		case 'CHANGED':
+    		  consolelog("This should now be the result message")
+    		  // Nothing should happen here
+    		break;
+
+    		case 'FIRST':
+    		  consolelog("STATUS CHANGED TO RELOADING")
+          status = 'RELOADING';
+          var serializer = new XMLSerializer();
+          contents = serializer.serializeToString( iframeNode.contentDocument );
+          iframeNode.contentWindow.location.reload();
+    		break;
+
+    		case 'RELOADING':
+          var serializer = new XMLSerializer();
+          var newContents = serializer.serializeToString( iframeNode.contentDocument );
+          consolelog( contents );
+          consolelog( newContents );
+          if( contents == newContents ){
+            iframeNode.contentWindow.location.reload();
+          } else {
+      		  consolelog("STATUS CHANGED TO CHANGED")
+      		  status = 'CHANGED';
+
+      		  attemptSubmit();
+          }
+
+    		break;
+    	}
+    });
+
+    formNode.addEventListener('submit', function( e ){
+      e.preventDefault();
+      if( formNode.url.value === '' ){
+      	consolelog('STATUS CHANGED TO EMPTY');
+      	status = 'EMPTY';
+      	contents = '';
+        iframeNode.src ='';      	
+      } else {
+      	consolelog('STATUS CHANGED TO FIRST');
+      	status = 'FIRST';
+      	contents ='';
+        iframeNode.src =formNode.url.value;      	
+      }
+
+    });
+    
+  };
+
+   </script>
+
+   <!-- NOTE: Eventually, changing "url" will change the iframe source -->
+
+   <body style="height:90%;">
+
+     <p>App</p>
+
+     <form id="formNode">
+       <input name="code" type="text" size="20" value="CODE">
+       <input name="url" type="text" size="20%" value="http://">
+       <input type="submit" >
+      </form>
+
+      <div style="height:100%">
+        <iframe id="iframeNode" style="width: 100%; height:100%;" src="">
+      </div>
+   </body>
+</html>

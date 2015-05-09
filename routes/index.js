@@ -138,14 +138,14 @@ router.get('/list_reset', function(req, res, next) {
   	if( err ) return next( err );
 		res.redirect('/list');
   })
-
 });
 
-
-/* GET home page. */
 router.get('/notready', function(req, res, next) {
 	 res.render('notready' );
 });
 
+router.get('/app', function(req, res, next) {
+	 res.render('app' );
+});
 
 module.exports = router;

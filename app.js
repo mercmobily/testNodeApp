@@ -13,14 +13,16 @@ SERVER
   [X] Send Alessandro the links
 
 CLIENT
-  [ ] Work out switch for security off, chrome switch
-  [ ] Make basic form with URL and code
-  [ ] Make second frame
-  [ ] Make second frame reload continuouly till contents change
+  [X] Work out switch for security off, chrome switch
+  [X] Make basic form with URL and code
+  [X] Make second frame
+  [X] Work out which extension I need to make it load ignoring headers
+  [X] Make loaded URL configurable
+  [X] Make second frame reload continuouly till contents change
   [ ] When page changes, activate submitter:
-    [ ] Find visible form
-    [ ] Find visible <input> in form
-    [ ] Submit code into form programmatically
+    [X] Find visible form
+    [X] Find visible <input> in form
+    [X] Submit code into form programmatically
   [ ] Test the hell out of it
 
 */
