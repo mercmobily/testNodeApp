@@ -9,7 +9,10 @@
 
    <script type="text/javascript">
 
+  
   output = '';
+
+
   function consolelog(){
     for( var i = 0; i < arguments.length; i ++ ){
       var o = arguments[ i ];
@@ -85,8 +88,7 @@
    		for(var i = 0; i < formsCollection.length; i ++){
    			var form = formsCollection[ i ];
 
-        debugger;
-   			consolelog("FORM: ", form.id, form.name, form.action );
+      	consolelog("FORM: ", form.id, form.name, form.action );
 
    			if( elementVisible( form )){
 

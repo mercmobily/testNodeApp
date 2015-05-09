@@ -117,26 +117,26 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/list', function(req, res, next) {
+router.get('/logs', function(req, res, next) {
 
   var db = globals.db;
   var logs = db.collection( 'logs' );
 
   logs.find({}, { sort: { 'added': -1 } } ).toArray( function( err, entries ){
   	if( err ) return next( err );
-    res.render('list', { entries: entries } );
+    res.render('logs', { entries: entries } );
   })
 });
 
 /* GET home page. */
-router.get('/list_reset', function(req, res, next) {
+router.get('/logs_reset', function(req, res, next) {
 
 	var db = globals.db;
   var logs = db.collection( 'logs' );
 
   logs.remove({}, function( err ){
   	if( err ) return next( err );
-		res.redirect('/list');
+		res.redirect('/logs');
   })
 });
 

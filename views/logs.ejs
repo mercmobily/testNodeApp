@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">
+   <head>
+      <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+      <meta http-equiv="Cache-Control" content="no-cache" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <title>INAIL - Bando ISI -- LISTA LOG</title>
+   </head>
+
+   <body>
+     <h1>LIST</h1>
+
+     <a href="/logs_reset">Cancella log</a>
+     <table border="1">
+     <tr>
+       <th>added</th>
+       <th>type</th>
+       <th>result</th>
+       <th>form</th>
+       <th>clientId</th>
+       <th>spyValue</th>
+       <th>hiddenForm_id1</th>
+       <th>hiddenForm_id2</th>
+       <th>goodForm_form83_tok_empty</th>
+       <th>goodForm_id81</th>
+       <th>goodForm_id82</th>
+       <th>goodForm_form83_t83</th>
+      </tr>
+     
+     <% entries.forEach( function(entry){ %>
+     <tr>
+       <td><%= entry.added %> <%= entry.added.getMilliseconds() %></td>
+       <td><%= entry.type %></td>
+       <td><%= entry.result %></td>
+       <td><%= entry.form %></td>
+       <td><%= entry.clientId %></td>
+       <td><%= entry.spyValue %></td>
+       <td><%= entry.hiddenForm_id1 %></td>
+       <td><%= entry.hiddenForm_id2 %></td>
+       <td><%= entry.goodForm_form83_tok_must_be_empty %></td>
+       <td><%= entry.goodForm_id81 %></td>
+       <td><%= entry.goodForm_id82 %></td>
+       <td><%= entry.goodForm_form83_t83 %></td>
+      </tr>
+     <% }); %>
+     </table>
+   </body>
+</html>

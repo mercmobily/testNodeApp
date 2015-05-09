@@ -19,11 +19,13 @@ CLIENT
   [X] Work out which extension I need to make it load ignoring headers
   [X] Make loaded URL configurable
   [X] Make second frame reload continuouly till contents change
-  [ ] When page changes, activate submitter:
+  [X] When page changes, activate submitter:
     [X] Find visible form
     [X] Find visible <input> in form
     [X] Submit code into form programmatically
-  [ ] Test the hell out of it
+  [X] Test the hell out of it
+  [ ] Add button to send logs to server
+  [ ] Explore the possibility of 
 
 */
 
