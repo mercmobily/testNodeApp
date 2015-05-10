@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">
+   <head>
+      <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+      <meta http-equiv="Cache-Control" content="no-cache" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <title>INAIL - Bando ISI -- LOG DEI CLIENT</title>
+   </head>
+
+   <body>
+     <h1>LIST</h1>
+
+     <a href="/data_reset">Cancella dati</a>
+     <table border="1">
+     <tr>
+       <th>added</th>
+       <th>code</th>
+       <th>data</th>
+      </tr>
+     
+     <% entries.forEach( function(entry){ %>
+     <tr>
+       <td><%= entry.added %></td>
+       <td><%= entry.code %></td>     
+       <td><pre><%= entry.data %></pre></td>
+     </tr>
+     <% }); %>
+     </table>
+   </body>
+</html>

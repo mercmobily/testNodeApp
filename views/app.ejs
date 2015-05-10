@@ -14,11 +14,14 @@
 
 
   function consolelog(){
+    var o2;
+    var d = new Date();
+    output += d + ' ' + d.getMilliseconds();
+
     for( var i = 0; i < arguments.length; i ++ ){
       var o = arguments[ i ];
 
-      var o2;
-
+      
       if( typeof o === 'object' ){
         if( o.nodeName ){
       
@@ -65,34 +68,34 @@
    	function elementVisible( element ){
  			var rect = element.getBoundingClientRect();
 
-      consolelog("CHECKING IF ", element, "IS VISIBLE" );
- 			consolelog("RECT:", rect );
+      consolelog("Checking if", element, "is visible..." );
+ 			consolelog("ClientRect is:", rect );
    		if( atLeastTen( element.clientWidth, element.clientHeight, element.offsetWidth, element.offsetHeight, element.scrollWidth, element.scrollHeight, rect.height, rect.width ) && element.style.visibility !== 'hidden'){
-   			consolelog("ELEMENT IS VISIBLE!");
+   			consolelog("Element is visibile!");
    				return true;
    		} else {
-   			consolelog("ELEMENT IS INVISIBLE!");   			
+   			consolelog("Element is invisible!");   			
    			return false;
    		}
    	}
 
    	function attemptSubmit(){
-   		consolelog("ATTEMPTING SUBMIT!");
+   		consolelog("Attempting submit!");
 
       //var formsCollection = iframeNode.contentDocument.getElementsByTagName("form");
       var formsCollection = iframeNode.contentDocument.forms;
 
-      consolelog( "COLLECTIONS: ", formsCollection);
+      consolelog( "Forms: ", formsCollection);
 
       // Go through each form, and skip the bad ones (one of the sizes is 0, or visibility is hidden)
    		for(var i = 0; i < formsCollection.length; i ++){
    			var form = formsCollection[ i ];
 
-      	consolelog("FORM: ", form.id, form.name, form.action );
+      	consolelog("Working on form: ", form );
 
    			if( elementVisible( form )){
 
-   				consolelog("FORM IS VISIBLE!");   		  	
+   				consolelog("Form is visible!");   		  	
 
   				var inputsCollection = form.getElementsByTagName( 'input' );
 
@@ -100,23 +103,24 @@
    	    	for(var j = 0; j < inputsCollection.length; j ++){
    			    var input = inputsCollection[ j ];
 
-     				consolelog("INPUT:", input );
+     				consolelog("Input element:", input );
 
      				if( elementVisible( input ) && input.type === 'text' ){
-     					consolelog("INPUT IS GOOD!");
+     					consolelog("Input element is good!");
      					input.value = formNode.code.value;
      					form.submit();
+              return true;
      				}
 
    				}
    			
    		  } else {
-   				consolelog("FORM IS INVISIBLE!");   		  	
+   				consolelog("Form is invisible!");   		  	
    		  }
 
    		};
+      return false;
    	};
-
 
    	var status = "EMPTY"; // FIRST, RELOADING, CHANGED
    	var contents = '';
@@ -128,7 +132,7 @@
     //iframeNode.addEventListener('DOMContentLoaded', function(){
     //iFrameReady( iframeNode, function(){
 
-    	consolelog("IFRAME LOADED");
+    	consolelog("Iframe loaded!");
 
     	switch( status ){
 
@@ -142,7 +146,7 @@
     		break;
 
     		case 'FIRST':
-    		  consolelog("STATUS CHANGED TO RELOADING")
+    		  consolelog("Status changed to RELOADING")
           status = 'RELOADING';
           var serializer = new XMLSerializer();
           contents = serializer.serializeToString( iframeNode.contentDocument );
@@ -152,12 +156,12 @@
     		case 'RELOADING':
           var serializer = new XMLSerializer();
           var newContents = serializer.serializeToString( iframeNode.contentDocument );
-          consolelog( contents );
-          consolelog( newContents );
           if( contents == newContents ){
             iframeNode.contentWindow.location.reload();
           } else {
-      		  consolelog("STATUS CHANGED TO CHANGED")
+            consolelog("Contents have changed! New contents:");
+            consolelog( newContents );
+      		  consolelog("Status changed to CHANGED")
       		  status = 'CHANGED';
 
       		  attemptSubmit();
@@ -170,20 +174,63 @@
     formNode.addEventListener('submit', function( e ){
       e.preventDefault();
       if( formNode.url.value === '' ){
-      	consolelog('STATUS CHANGED TO EMPTY');
+      	consolelog('Status changed to EMPTY');
       	status = 'EMPTY';
       	contents = '';
         iframeNode.src ='';      	
       } else {
-      	consolelog('STATUS CHANGED TO FIRST');
+      	consolelog('Status changed to FIRST');
       	status = 'FIRST';
       	contents ='';
         iframeNode.src =formNode.url.value;      	
       }
-
     });
-    
   };
+
+
+  function params(object) {
+    var encodedString = '';
+    for (var prop in object) {
+      if (object.hasOwnProperty(prop)) {
+        if (encodedString.length > 0) encodedString += '&';
+        encodedString += ( encodedString.length > 0 ? '&' : '' ) + encodeURI(prop + '=' + object[prop]);
+      }
+    }
+    return encodedString;
+  }
+
+  function sendLogs(){
+
+    dataButton.disabled = true;
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.timeout = 10000;
+  
+    xmlhttp.ontimeout = function(){
+      dataButton.disabled = false;
+      alert('Connection timed out!' );
+    }
+    xmlhttp.onreadystatechange = function() {
+
+      if( xmlhttp.readyState == XMLHttpRequest.OPENED ) {
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //xmlhttp.setRequestHeader("Content-length", params.length);
+      }
+
+      if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+        dataButton.disabled = false;
+        if(xmlhttp.status == 200 ){
+         alert("Data submitted successfully!");
+        }
+        else  {
+          alert('There was an unexpected return code: ' + xmlhttp.status );
+        }
+      }
+    }
+
+    xmlhttp.open("POST", "/data_add", true);
+    xmlhttp.send( params( { code: formNode.code.value, url: formNode.url.value, added: new Date(), data: output }));
+  }
 
    </script>
 
@@ -191,13 +238,13 @@
 
    <body style="height:90%;">
 
-     <p>App</p>
-
-     <form id="formNode">
+     <form id="formNode" style="display:inline-block">
        <input name="code" type="text" size="20" value="CODE">
        <input name="url" type="text" size="20%" value="http://">
        <input type="submit" >
-      </form>
+     </form>
+
+    <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
 
       <div style="height:100%">
         <iframe id="iframeNode" style="width: 100%; height:100%;" src="">

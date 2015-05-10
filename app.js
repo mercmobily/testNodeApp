@@ -24,8 +24,17 @@ CLIENT
     [X] Find visible <input> in form
     [X] Submit code into form programmatically
   [X] Test the hell out of it
-  [ ] Add button to send logs to server
-  [ ] Explore the possibility of 
+  [X] Add submission data routes to server 
+  [X] Add button to send logs to server
+  [X] Add timestamp to each line 
+  [ ] Improve interface (add menu for all functionality at the top)
+  [ ] Improve logging: response header, first page, changed page, anything else  
+
+  HARDEN
+  [ ] Deal with redirects, in header OR in meta
+  [ ] Deal with form changing a little, but without form itself -- which will trigger reload
+  [ ] Add checkbox to prevent automatic submitting
+  [ ] Explore possibility of submitting when DOMReady rather than ready (no CCS)
 
 */
 
@@ -92,6 +101,7 @@ if (app.get('env') === 'development') {
       message: err.message,
       error: err
     });
+    console.log( err.stack );
   });
 }
 
@@ -103,6 +113,8 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
+  console.log( err.stack );
+
 });
 
 
