@@ -89,7 +89,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* Redirect to /app if / is requested */
 var router = express.Router();
 router.get('/', function(req, res, next) {
-  conso
   res.redirect('/app/main');
 });
 app.use( '/', router );
