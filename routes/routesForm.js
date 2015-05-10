@@ -2,6 +2,19 @@
 var express = require('express');
 var router = express.Router();
 var globals = require( '../globals.js');
+var auth = require('basic-auth');
+
+function protect(req, res, next) {
+  var user = auth(req);
+
+  if (user === undefined || user['name'] !== 'ale' || user['pass'] !== 'ale') {
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+    res.end('Unauthorized');
+  } else {
+    next();
+  }
+};
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -135,7 +148,7 @@ router.get('/logs', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/logs_reset', function(req, res, next) {
+router.get('/logs_reset', protect, function(req, res, next) {
 
 	var db = globals.db;
   var logs = db.collection( 'logs' );
