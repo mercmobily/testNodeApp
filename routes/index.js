@@ -53,12 +53,12 @@ function log( form, req, done ){
 
 router.get('/serve', function(req, res, next) {
 	globals.serve = true;
-	res.redirect('/');
+	res.redirect('/logs');
 });
 
 router.get('/stop', function(req, res, next) {
 	globals.serve = false;
-	res.redirect('/');
+	res.redirect('/form');
 });
 
 router.post('/ISI_ClickWeb/ISIServlet', function(req, res, next ){
@@ -82,9 +82,13 @@ router.post('/2014/s83', function(req, res, next ){
    });
 });
 
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
+	res.redirect('/app');
+});
+
+/* GET home page. */
+router.get('/form', function(req, res, next) {
 
 	if( globals.serve ){
 
@@ -107,7 +111,7 @@ router.get('/', function(req, res, next) {
 		}, function( err ){
 			if( err ) return done( err );
 
-		  res.render('index', { title: 'Express', clientId: req.session.clientId, spyValue: req.session.spyValue });
+		  res.render('form', { title: 'Express', clientId: req.session.clientId, spyValue: req.session.spyValue });
 		});
 
 	} else {
