@@ -4,7 +4,7 @@
       <meta http-equiv="content-type" content="text/html;charset=utf-8" />
       <meta http-equiv="Cache-Control" content="no-cache" />
       <meta http-equiv="Pragma" content="no-cache" />
-      <title>The title</title>
+      <title>SUBMIT AUTOMATICO -- PAGINA PRINCIPALE</title>
    </head>
 
    <script type="text/javascript">
@@ -228,7 +228,7 @@
       }
     }
 
-    xmlhttp.open("POST", "/data_add", true);
+    xmlhttp.open("POST", "/app/data_add", true);
     xmlhttp.send( params( { code: formNode.code.value, url: formNode.url.value, added: new Date(), data: output }));
   }
 
@@ -246,7 +246,7 @@
 
     <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
 
-    <div style="float: right;display:inline-block;"><a href="/data">Data log</a></div>
+    <div style="float: right;display:inline-block;"><a href="/app/data">Data log</a></div>
     
     <div style="height:100%">
       <iframe id="iframeNode" style="width: 100%; height:100%;" src="">

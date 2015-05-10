@@ -27,7 +27,11 @@ CLIENT
   [X] Add submission data routes to server 
   [X] Add button to send logs to server
   [X] Add timestamp to each line 
-  [ ] Improve interface (add menu for all functionality at the top)
+  [X] Improve interface (add menu for all functionality at the top)
+  [X] Improve paths, 
+    * /app path (app/main, app/data, app/data_reset, app/data_add)
+    * /form path (form/main, form/logs/ form/logs_reset, form/stop, form/serve, form/notready)
+  [X] Change titles of each page to reflect what they are
   [ ] Improve logging: response header, first page, changed page, anything else  
 
   HARDEN
@@ -46,8 +50,9 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+var routesApp = require('./routes/routesApp');
+var routesForm = require('./routes/routesForm');
+//var users = require('./routes/users');
 
 var app = express();
 var globals = require('./globals.js');
@@ -80,8 +85,19 @@ app.use(cookieSession({ secret: 'woodchucks are nasty animals!!!' }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+
+/* Redirect to /app if / is requested */
+var router = express.Router();
+router.get('/', function(req, res, next) {
+  conso
+  res.redirect('/app/main');
+});
+app.use( '/', router );
+
+app.use('/app', routesApp);
+app.use('/form', routesForm);
+
+//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
