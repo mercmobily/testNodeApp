@@ -32,13 +32,40 @@ CLIENT
     * /app path (app/main, app/data, app/data_reset, app/data_add)
     * /form path (form/main, form/logs/ form/logs_reset, form/stop, form/serve, form/notready)
   [X] Change titles of each page to reflect what they are
-  [ ] Improve logging: response header, first page, changed page, anything else  
+  [X] Explore possibility of submitting when DOMReady rather than ready (no CCS)
+
+IMPROVEMENTS
+  [ ] Add codes to the code
+  [ ] Have a select list of clientName/codes,
+  [ ] Change clients so that they fetch the URL and THEN start asking
+  [ ] Improve logging: response header, first page, changed page, etc.  
+  [ ] Check that logs are sucessfully sent even if they are > 20Mb
+  [ ] Show a current status, with number of requests and current action happening
+  [ ] Show the server's date and time at the beginning, and after each request
+  [ ] In the log view, show the difference in ms between submitting and receiving by matching clientId
+  [ ] Add screen to set URL for clients
+  [ ] Add mechanism to fetch URL automatically
+  [ ] Delay between reloads
+  [ ] Add flag to prevent automatic submission
 
   HARDEN
   [ ] Deal with redirects, in header OR in meta
   [ ] Deal with form changing a little, but without form itself -- which will trigger reload
   [ ] Add checkbox to prevent automatic submitting
-  [ ] Explore possibility of submitting when DOMReady rather than ready (no CCS)
+
+
+NEXT YEAR
+---------
+
+  OPEN & GO APP
+  [ ] Allow customers to login and get the app page with the code pre-filled in
+  [ ] If "preset", take out everything from interface except the status messages with countdown etc.
+  [ ] If "preset", wait for URL from the server, and start working as soon as URL is there
+  [ ] Add remote logging ablity on server, to log client logins etc.
+  [ ] Send logs automatically at the end of the procedure
+
+  HEADELESS
+  [ ] Make a server that will launch N "open & go" pages in headless browsers
 
 */
 
@@ -52,6 +79,7 @@ var bodyParser = require('body-parser');
 
 var routesApp = require('./routes/routesApp');
 var routesForm = require('./routes/routesForm');
+var codes = require('./codes');
 //var users = require('./routes/users');
 
 var app = express();

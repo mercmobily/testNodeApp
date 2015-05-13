@@ -20,26 +20,6 @@ router.get('/main', function(req, res, next) {
 	 res.render('app' );
 });
 
-router.post('/data_add', function(req, res, next ){
-
-  var db = globals.db;
-
-	var record = {};
-	record.code = req.body.code;
-  record.url = req.body.url;
-  record.added = req.body.added;
-  record.data = req.body.data;
-
-	var data = db.collection( 'data' );
-
-  data.insert( record, function( err ){
-		if( err ) return done( err );
-
-    res.send('OK');
-	})
-});
-
-
 /* GET home page. */
 router.get('/data', protect, function(req, res, next) {
 
@@ -58,6 +38,25 @@ router.get('/data', protect, function(req, res, next) {
 
     res.render('data', { entries: entries } );
   })
+});
+
+router.post('/data_add', function(req, res, next ){
+
+  var db = globals.db;
+
+	var record = {};
+	record.code = req.body.code;
+  record.url = req.body.url;
+  record.added = req.body.added;
+  record.data = req.body.data;
+
+	var data = db.collection( 'data' );
+
+  data.insert( record, function( err ){
+		if( err ) return done( err );
+
+    res.send('OK');
+	})
 });
 
 
