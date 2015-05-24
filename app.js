@@ -49,11 +49,12 @@ IMPROVEMENTS
 
 
   HARDEN
-  [ ] Check that Date.parse will ALWAYS work on Date header
+  [X] Check that Date.parse will ALWAYS work on Date header http://stackoverflow.com/questions/30420816/how-to-safely-parse-the-date-http-header-in-javascript
+
   [ ] Improve logging: response header, first page, changed page, etc.  
   [ ] Check that logs are sucessfully sent even if they are > 20Mb
 
-  [ ] Deal with redirects, in header OR in meta
+  [ ] Deal with redirects, in header OR in meta. Change example form
   [ ] Deal with form changing a little, but without form itself -- which should trigger reload
   
 

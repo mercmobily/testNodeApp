@@ -111,6 +111,8 @@
                 var parsedDate = Date.parse( fetchedServerDate );
                 self.subsequentInterval = setInterval( function(){
                   parsedDate += 1000;
+                  //parsedDate.setUTCSeconds( parsedDate.getUTCSeconds() + 1 );
+                  
 
                   var event = new CustomEvent('serverDateChanged',  { 'detail': { newDate: new Date( parsedDate ) } } );
                   serverDate.dispatchEvent( event );
@@ -450,6 +452,7 @@
      </form>
 
      <input type="button" value="Stop" id="stopButton">
+     <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
 
        <span id="messageNode"></span>
 
@@ -462,7 +465,6 @@
 
       <input type="checkbox" id="doAutomaticSubmit" checked>
 
-      <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
       <a href="/app/urlForm">URL</a> <a href="/app/data">Data log</a>
     </div>
     
