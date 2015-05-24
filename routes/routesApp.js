@@ -4,6 +4,7 @@ var router = express.Router();
 var globals = require( '../globals.js');
 var auth = require('basic-auth');
 
+
 function protect(req, res, next) {
   var user = auth(req);
 
@@ -19,6 +20,43 @@ function protect(req, res, next) {
 router.get('/main', function(req, res, next) {
 	 res.render('app' );
 });
+
+router.get('/urlForm', function(req, res, next) {
+   res.render('urlForm' );
+});
+
+
+// Get and set the submission URL
+router.get('/url', function(req, res, next) {
+
+  var db = globals.db;
+
+  var data = db.collection( 'config' );
+
+  data.find( { _id: 0 }).toArray( function( err, response ){
+    if( err ) return done( err );
+
+    var record = response[ 0 ];
+
+    if( ! record ) res.send('http://fsmsh.com/form/main' );
+    else res.send( record.url );
+  });
+});
+
+
+router.post('/url', function(req, res, next ){
+
+  var db = globals.db;
+
+  var data = db.collection( 'config' );
+
+  data.save( { _id: 0, url: req.body.url }, function( err ){
+    if( err ) return done( err );
+
+    res.redirect('/app/main');
+  })
+});
+
 
 /* GET home page. */
 router.get('/data', protect, function(req, res, next) {
@@ -71,5 +109,10 @@ router.get('/data_reset', protect, function(req, res, next) {
 		res.redirect('/app/data');
   })
 });
+
+
+
+
+
 
 module.exports = router;

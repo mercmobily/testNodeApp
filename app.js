@@ -35,24 +35,27 @@ CLIENT
   [X] Explore possibility of submitting when DOMReady rather than ready (no CCS)
 
 IMPROVEMENTS
-  [ ] Add codes to the code
-  [ ] Have a select list of clientName/codes,
-  [ ] Change clients so that they fetch the URL and THEN start asking
-  [ ] Improve logging: response header, first page, changed page, etc.  
-  [ ] Check that logs are sucessfully sent even if they are > 20Mb
-  [ ] Show a current status, with number of requests and current action happening
-  [ ] Show the server's date and time at the beginning, and after each request
-  [ ] In the log view, show the difference in ms between submitting and receiving by matching clientId
-  [ ] Add screen to set URL for clients
-  [ ] Add mechanism to fetch URL automatically
-  [ ] Delay between reloads
-  [ ] Add flag to prevent automatic submission
+  [X] Add codes to the code as JS source
+  [X] Have a select list of clientName/codes,
+  [X] Change clients so that they fetch the URL and THEN start asking
+  [X] Add screen to set URL for all clients
+  [X] Show a current status, with number of requests and current action happening
+  [X] Add button to abort procedure while it's all happening
+
+  [X] Show the server's date and time
+  [X] In the log view, show the difference in ms between submitting and receiving by matching clientId
+  [X] Add flag to prevent automatic submission and PASTE
+  [X] Configurable delay between reloads
+
 
   HARDEN
-  [ ] Deal with redirects, in header OR in meta
-  [ ] Deal with form changing a little, but without form itself -- which will trigger reload
-  [ ] Add checkbox to prevent automatic submitting
+  [ ] Check that Date.parse will ALWAYS work on Date header
+  [ ] Improve logging: response header, first page, changed page, etc.  
+  [ ] Check that logs are sucessfully sent even if they are > 20Mb
 
+  [ ] Deal with redirects, in header OR in meta
+  [ ] Deal with form changing a little, but without form itself -- which should trigger reload
+  
 
 NEXT YEAR
 ---------

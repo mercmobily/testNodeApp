@@ -9,10 +9,9 @@
 
    <script type="text/javascript">
 
+  var RELOADPAUSE = 300;
   
   output = '';
-
-
   function consolelog(){
     var o2;
     var d = new Date();
@@ -53,7 +52,130 @@
     console.log.apply( console, arguments );
   } 
 
+
+  var dateFetcher = {
+
+    start: function(){
+      
+      if( this.running ) return;
+
+      // Check that the URL is there
+      var url = formNode.url.value;
+      if( url == '' || url == 'http://' ){
+        alert("Settare prima l'URL!");
+        return;
+      }
+
+      this.running = true;
+      dateFetcherStart.disabled = true;
+      dateFetcherStop.disabled = false;
+
+      var self = this;
+
+      var existingServerDate = null;
+      var timeChanged = false;
+
+      serverDate.innerHTML = 'Sincronizzando...';
+
+      self.initialInterval = setInterval( function(){
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.timeout = 3000;
+      
+        xmlhttp.onreadystatechange = function() {
+
+          if( xmlhttp.readyState == XMLHttpRequest.DONE ) {
+
+            // This will only happen once
+            if( timeChanged ) return;
+       
+            var fetchedServerDate = xmlhttp.getResponseHeader('Date');
+
+            // This is the first time
+            if( ! existingServerDate ) {
+              existingServerDate = fetchedServerDate;
+            } else {
+
+              fetchedServerDateP = Date.parse( fetchedServerDate );
+              existingServerDateP = Date.parse( existingServerDate );
+
+              if( fetchedServerDateP > existingServerDateP ){
+
+                // Time has changed!
+                // Set timeChaged to true so that previous, slow AJAX calls never get here,
+                // clear the initial interval, and set a new interval to emit serverDateChanged events
+                timeChanged = true;
+                clearInterval( self.initialInterval );
+
+                // Starting from the fetched date, emit a serverDateChanged signal every second
+                var parsedDate = Date.parse( fetchedServerDate );
+                self.subsequentInterval = setInterval( function(){
+                  parsedDate += 1000;
+
+                  var event = new CustomEvent('serverDateChanged',  { 'detail': { newDate: new Date( parsedDate ) } } );
+                  serverDate.dispatchEvent( event );
+
+                }, 1000 );
+              }
+
+            }
+          }
+        }
+        if( formNode.url != '' ){
+          xmlhttp.open("HEAD", formNode.url.value, true);
+          xmlhttp.send();
+        }
+      }, 70 );  
+
+    },
+
+    stop: function(){
+      if( ! this.running ) return;
+      this.running = false;
+      dateFetcherStart.disabled = false;
+      dateFetcherStop.disabled = true;
+
+      if( this.subsequentInterval ) clearInterval( this.subsequentInterval );
+      if( this.initialInterval ) clearInterval( this.initialInterval );
+      serverDate.innerHTML = 'Inattivo';
+    }
+
+  }
+
+
   window.onload = function(){
+
+    function populateCodeSelect(){
+
+      var codes = {
+        1:  '+63a1ba152674d5cac09efdf2ca494acdce9276c04cef8cb6ed27cc65b5b58140',
+        2:  '-7d69a3e8668b9fb2c0449254bebf4e04375985b01fac348ece4a6538948739dc',
+        3:  '+26e444f7d387d57345b2a80078ee787892e861f445e4461e60be2050daf37ac6',
+        4:  '-0e744827ba879565f5e23aa7582b2ed80c7f3a90dda38ce8714f8570f726d6d1',
+        5:  '-2944783874e1ce0f1be5fe601fab15728dd056a5b5924a974897307a48ebbbc2',
+        6:  '-017505600b43a90501bf52e5913ef9de3f3cc9f23bee45e9200b8f1f0ca45026',
+        7:  '-04ed0ee167dc2bd6dfea34f0019938eae12e5ad92d3aa9f173d4686af6786688',
+        8:  '+342642689e85db416d67818ab2dd5efd1b9d64d7f8b9d8714e2fc4760b2fed6f',
+        9:  '-0854a2c78132eb121b3594ba80850574cca0f8250d9df5ef0813b8fcf115cbde',
+        10: '+38df79e348e278c0097b1d3ac6d01fa9a474e2892d38277e3677fdfe5beffe38',
+        11: '+0ff4e38d254a96a912bade77255d388b8dd7e64aee7d8a0751c23f79a177719a',
+        12: '-558133015ee7cd77e3931d7e779dd23dafb9238f17c6fe1adbc124f374401372',
+        13: '+479b814d7ac2a1dc06c5fb44880b295bbae43fa50a863d1258680b01bc300b37',
+        14: '+32180725d25ed0994e1a7fde32679a10e1440f146cfece893b7aa5356527742d',
+        15: '+5f1319b7274abc4502c40e03a28d59aeb497a00a97f01e8c12a0511166c6f5ea',
+        16: '-1092a64dec43fca510e24e2c8cec6aed1d7ef292c096a9dd872381db5e698839',
+        17: '-40d105e82601864e78a79c0300ba917b25c5383cb91167df79a50ee83d5553f9',
+        18: '-2b4681ad5d5668f247d52d8cb2458a18da4fd81d6fd7e602124ffe26ab4c9d30',
+        19: '-0d682d187ecc6b03dc0fdb280f5e690bd8fbf6950618334c6c89363218c37217'
+      }
+      for( var k in codes ){
+         var option = document.createElement( 'option' );
+         option.value = codes[ k ];
+         option.textContent = k;
+         code.appendChild( option );
+      }
+
+    }
 
    	function atLeastTen(){
 
@@ -122,16 +244,34 @@
       return false;
    	};
 
+
+    // ONLOAD EXECUTION STARTS HERE
+   
+    populateCodeSelect();
+
+
+
+    // Always display the latest date wheneve there is a change
+    serverDate.addEventListener( 'serverDateChanged', function( e ){
+      serverDate.innerHTML = e.detail.newDate.toUTCString();
+    });
+
+
+
+    message("Applicazione pronta");
+
    	var status = "EMPTY"; // FIRST, RELOADING, CHANGED
    	var contents = '';
+    var newContents = '';
+    var reloadCount = 0;
 
     consolelog("MAIN contents loaded!");
+    message("Applicazione pronta");
 
     //iframeNode.addEventListener('DOMFrameContentLoaded', function(){
     iframeNode.addEventListener('load', function(){
     //iframeNode.addEventListener('DOMContentLoaded', function(){
     //iFrameReady( iframeNode, function(){
-
     	consolelog("Iframe loaded!");
 
     	switch( status ){
@@ -142,29 +282,41 @@
 
     		case 'CHANGED':
     		  consolelog("This should now be the result message")
+          message("Processo terminato");
     		  // Nothing should happen here
     		break;
 
     		case 'FIRST':
+          message("Prima pagina arrivata");
     		  consolelog("Status changed to RELOADING")
           status = 'RELOADING';
+          reloadCount = 0;
           var serializer = new XMLSerializer();
           contents = serializer.serializeToString( iframeNode.contentDocument );
+          newContents = '';
           iframeNode.contentWindow.location.reload();
     		break;
 
     		case 'RELOADING':
+          reloadCount ++;
+          message("Pagina ricaricata: " + reloadCount );          
+
           var serializer = new XMLSerializer();
           var newContents = serializer.serializeToString( iframeNode.contentDocument );
           if( contents == newContents ){
-            iframeNode.contentWindow.location.reload();
+            setTimeout( function(){
+              iframeNode.contentWindow.location.reload();
+            }, RELOADPAUSE );
           } else {
             consolelog("Contents have changed! New contents:");
             consolelog( newContents );
       		  consolelog("Status changed to CHANGED")
       		  status = 'CHANGED';
 
-      		  attemptSubmit();
+            // Only attempt submit if the checkbox is checked
+            if( doAutomaticSubmit.checked ){
+      		    attemptSubmit();
+            }
           }
 
     		break;
@@ -173,6 +325,7 @@
 
     formNode.addEventListener('submit', function( e ){
       e.preventDefault();
+
       if( formNode.url.value === '' ){
       	consolelog('Status changed to EMPTY');
       	status = 'EMPTY';
@@ -183,10 +336,20 @@
       	status = 'FIRST';
       	contents ='';
         iframeNode.src =formNode.url.value;      	
+
       }
     });
-  };
 
+    stopButton.addEventListener('click', function( e ){
+      status = "EMPTY"; // FIRST, RELOADING, CHANGED
+      contents = '';
+      newContents = '';
+      reloadCount = 0;
+      iframeNode.src ='';       
+      message("Procedura interrotta");
+    });
+
+  };
 
   function params(object) {
     var encodedString = '';
@@ -223,6 +386,7 @@
          alert("Data submitted successfully!");
         }
         else  {
+          dataButton.disabled = false;
           alert('There was an unexpected return code: ' + xmlhttp.status );
         }
       }
@@ -232,21 +396,75 @@
     xmlhttp.send( params( { code: formNode.code.value, url: formNode.url.value, added: new Date(), data: output }));
   }
 
+  function message( m ){
+    messageNode.innerHTML = m;
+  }
+
+
+  function getURL(){
+
+    getUrlButton.disabled = true;
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.timeout = 10000;
+  
+    xmlhttp.ontimeout = function(){
+      getUrlButton.disabled = false;
+      alert('Connection timed out while getting the URL!' );
+    }
+    xmlhttp.onreadystatechange = function() {
+
+      if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+        getUrlButton.disabled = false;
+        if(xmlhttp.status == 200 ){
+         formNode.url.value = xmlhttp.response;
+         alert("URL fetched successfully!");
+        }
+        else  {
+          getUrlButton.disabled = false;
+          alert('There was an unexpected return code while fetching the URL: ' + xmlhttp.status );
+        }
+      }
+    }
+
+    xmlhttp.open("GET", "/app/url", true);
+    xmlhttp.send()
+  }
+
+
    </script>
 
    <!-- NOTE: Eventually, changing "url" will change the iframe source -->
 
    <body style="height:90%;">
 
+     <input type="button" value="Get URL" id="getUrlButton" onclick="getURL()">
+
      <form id="formNode" style="display:inline-block">
-       <input name="code" type="text" size="20" value="CODE">
-       <input name="url" type="text" size="20%" value="http://">
-       <input type="submit" >
+
+       <select name="code" id="code">
+       </select>
+
+       <input name="url" disabled type="text" size="20%" value="http://">
+       <input type="submit" value="Monitorizza">
      </form>
 
-    <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
+     <input type="button" value="Stop" id="stopButton">
 
-    <div style="float: right;display:inline-block;"><a href="/app/data">Data log</a></div>
+       <span id="messageNode"></span>
+
+    
+
+    <div style="float: right;display:inline-block;">
+      <span id="serverDate">Inattivo</span>
+      <input type="button" value="T" id="dateFetcherStart" onclick="dateFetcher.start()">
+      <input type="button" value="E" id="dateFetcherStop" disabled onclick="dateFetcher.stop()">
+
+      <input type="checkbox" id="doAutomaticSubmit" checked>
+
+      <input style="display:inline-block" id="dataButton" type="button" value="send logs" onclick="sendLogs()">
+      <a href="/app/urlForm">URL</a> <a href="/app/data">Data log</a>
+    </div>
     
     <div style="height:100%">
       <iframe id="iframeNode" style="width: 100%; height:100%;" src="">

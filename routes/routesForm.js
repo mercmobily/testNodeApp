@@ -32,36 +32,51 @@ function log( form, req, done ){
 
 	var b = req.body;
 	var logs = db.collection( 'logs' );
+	var now = new Date();
 
 	// Check that result is good
 	var result = "BAD";
+	var delta = 0;
 	if( form === 's83' && b['form83:tok'] == '' && b.id81 === req.session.clientId && b.id82 == req.session.spyValue && b[ 'form83:t83'] != '') result = "GOOD!";
 
-	logs.insert( { 
+	logs.find( { clientId: b.id81, spyValue: b.id82, type: 'FORM_PAGE' }, { sort: { 'added': -1 } } ).toArray( function( err, prevPages ){
+	  if( err ) return done( err );
 
-		type: 'RESPONSE',
+	  // Work out delta, if present
+	  if( prevPages && prevPages[ 0 ] ){
+	  	var prevPage = prevPages[ 0 ];
+	  	delta = now - prevPage.added;
+	  }
 
-		result: result,
+		logs.insert( { 
 
-		form: form, 
+			type: 'RESPONSE',
 
-		clientId: req.session.clientId,
-		spyValue: req.session.spyValue,
+			result: result,
 
-		hiddenForm_id1: b.id1,
-		hiddenForm_id2: b.id2,
+			delta: delta,
 
-		goodForm_form83_tok_must_be_empty: b['form83:tok'],
-		goodForm_id81: b.id81,
-    goodForm_id82: b.id82,
-    goodForm_form83_t83: b[ 'form83:t83' ],
-    added: new Date(),
+			form: form, 
 
-	}, function( err ){
-		if( err ) return done( err );
+			clientId: req.session.clientId,
+			spyValue: req.session.spyValue,
 
-		done( null );
-	})
+			hiddenForm_id1: b.id1,
+			hiddenForm_id2: b.id2,
+
+			goodForm_form83_tok_must_be_empty: b['form83:tok'],
+			goodForm_id81: b.id81,
+	    goodForm_id82: b.id82,
+	    goodForm_form83_t83: b[ 'form83:t83' ],
+	    added: now,
+
+		}, function( err ){
+			if( err ) return done( err );
+
+			done( null );
+		});
+
+	});
 }
 
 router.post('/ISI_ClickWeb/ISIServlet', function(req, res, next ){
