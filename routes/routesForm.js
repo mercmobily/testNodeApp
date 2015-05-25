@@ -79,6 +79,7 @@ function log( form, req, done ){
 	});
 }
 
+
 router.post('/ISI_ClickWeb/ISIServlet', function(req, res, next ){
 	if( ! globals.serve ) return res.redirect( '/form/notready' );
 	
@@ -104,10 +105,9 @@ router.get('/notready', function(req, res, next) {
 	 res.render('notready' );
 });
 
-
-
 router.get('/serve', function(req, res, next) {
 	globals.serve = true;
+
 	res.redirect('/form/logs');
 });
 
@@ -119,6 +119,19 @@ router.get('/stop', function(req, res, next) {
 
 /* GET home page. */
 router.get('/main', function(req, res, next) {
+
+  if( globals.serve ){
+  	res.redirect( '/form/realSecret' );
+  } else {
+    delete req.session;
+	  res.render('wait' );
+  }
+});
+
+
+
+/* GET home page. */
+router.get('/realSecret', function(req, res, next) {
 
 	if( globals.serve ){
 

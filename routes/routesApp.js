@@ -4,6 +4,10 @@ var router = express.Router();
 var globals = require( '../globals.js');
 var auth = require('basic-auth');
 
+var serverTime = null;
+var alreadySynced = false;
+
+
 
 function protect(req, res, next) {
   var user = auth(req);
@@ -91,7 +95,7 @@ router.post('/data_add', function(req, res, next ){
 	var data = db.collection( 'data' );
 
   data.insert( record, function( err ){
-		if( err ) return done( err );
+		if( err ) return next( err );
 
     res.send('OK');
 	})

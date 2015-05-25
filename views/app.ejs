@@ -9,9 +9,12 @@
 
    <script type="text/javascript">
 
-  var RELOADPAUSE = 300;
+  var RELOADPAUSE = 0;
   
   output = '';
+  //output += (new Array(10*1024*1024)).join("x");
+  //output += (new Array(10*1024*1024)).join("x");
+  
   function consolelog(){
     var o2;
     var d = new Date();
@@ -30,7 +33,7 @@
 
         } else {
           try {
-            o = JSON.stringify( o );
+            o2 = JSON.stringify( o );
           } catch( e ){
 
             try {
@@ -193,6 +196,7 @@
  			var rect = element.getBoundingClientRect();
 
       consolelog("Checking if", element, "is visible..." );
+      debugger;
  			consolelog("ClientRect is:", rect );
    		if( atLeastTen( element.clientWidth, element.clientHeight, element.offsetWidth, element.offsetHeight, element.scrollWidth, element.scrollHeight, rect.height, rect.width ) && element.style.visibility !== 'hidden'){
    			consolelog("Element is visibile!");
@@ -267,7 +271,7 @@
     var newContents = '';
     var reloadCount = 0;
 
-    consolelog("MAIN contents loaded!");
+    consolelog("Application loaded!");
     message("Applicazione pronta");
 
     //iframeNode.addEventListener('DOMFrameContentLoaded', function(){
@@ -290,11 +294,13 @@
 
     		case 'FIRST':
           message("Prima pagina arrivata");
-    		  consolelog("Status changed to RELOADING")
-          status = 'RELOADING';
-          reloadCount = 0;
           var serializer = new XMLSerializer();
           contents = serializer.serializeToString( iframeNode.contentDocument );
+          consolelog("Initial page arrived!");
+          consolelog( contents );
+    		  consolelog("Status changed to RELOADING");
+          status = 'RELOADING';
+          reloadCount = 0;
           newContents = '';
           iframeNode.contentWindow.location.reload();
     		break;
@@ -306,6 +312,7 @@
           var serializer = new XMLSerializer();
           var newContents = serializer.serializeToString( iframeNode.contentDocument );
           if( contents == newContents ){
+            consolelog("Contents have NOT changed.");            
             setTimeout( function(){
               iframeNode.contentWindow.location.reload();
             }, RELOADPAUSE );
@@ -386,6 +393,7 @@
         dataButton.disabled = false;
         if(xmlhttp.status == 200 ){
          alert("Data submitted successfully!");
+         output = '';
         }
         else  {
           dataButton.disabled = false;
