@@ -15,6 +15,14 @@
   //output += (new Array(10*1024*1024)).join("x");
   //output += (new Array(10*1024*1024)).join("x");
   
+
+  function nodeToString( node ){
+    var tmp = document.createElement("div");
+    tmp.appendChild( node.cloneNode(true) );
+    return tmp.innerHTML;
+  }
+
+
   function consolelog(){
     var o2;
     var d = new Date();
@@ -22,14 +30,20 @@
 
     for( var i = 0; i < arguments.length; i ++ ){
       var o = arguments[ i ];
-
       
       if( typeof o === 'object' ){
-        if( o.nodeName ){
+        if( o.nodeName || o.constructor.name == 'HTMLCollection' ){
       
-          var tmp = document.createElement("div");
-          tmp.appendChild( o.cloneNode(true) );
-          o2 = tmp.innerHTML;
+          if( o.constructor.name == 'HTMLCollection' ){
+            o2 = [].map.call( o, function(node){
+              return nodeToString( node );
+            }).join("");
+
+          } else {
+            var tmp = document.createElement("div");
+            tmp.appendChild( o.cloneNode(true) );
+            o2 = nodeToString( o );
+          }
 
         } else {
           try {
@@ -196,7 +210,6 @@
  			var rect = element.getBoundingClientRect();
 
       consolelog("Checking if", element, "is visible..." );
-      debugger;
  			consolelog("ClientRect is:", rect );
    		if( atLeastTen( element.clientWidth, element.clientHeight, element.offsetWidth, element.offsetHeight, element.scrollWidth, element.scrollHeight, rect.height, rect.width ) && element.style.visibility !== 'hidden'){
    			consolelog("Element is visibile!");
@@ -213,7 +226,8 @@
       //var formsCollection = iframeNode.contentDocument.getElementsByTagName("form");
       var formsCollection = iframeNode.contentDocument.forms;
 
-      consolelog( "Forms: ", formsCollection);
+      consolelog( "Forms: " );
+      consolelog( formsCollection );
 
       // Go through each form, and skip the bad ones (one of the sizes is 0, or visibility is hidden)
    		for(var i = 0; i < formsCollection.length; i ++){
