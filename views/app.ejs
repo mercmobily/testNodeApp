@@ -241,7 +241,8 @@
 
   				var inputsCollection = form.getElementsByTagName( 'input' );
 
-          // Go through each form, and skip the bad ones (one of the sizes is 0, or visibility is hidden)
+          // Go through each input field, and skip the bad, invisible ones 
+          var found = 0;
    	    	for(var j = 0; j < inputsCollection.length; j ++){
    			    var input = inputsCollection[ j ];
 
@@ -252,9 +253,14 @@
      					input.value = formNode.code.value;
      					form.submit();
               return true;
-     				}
-
+     				} else {
+              consolelog("Input element is not visible!");              
+            }
    				}
+          if( ! found ){
+            consolelog("No workable input elements found, not taking action");
+            return false;
+          }
    			
    		  } else {
    				consolelog("Form is invisible!");   		  	
