@@ -249,7 +249,8 @@
      				consolelog("Input element:", input );
 
      				if( elementVisible( input ) && input.type === 'text' ){
-     					consolelog("Input element is good!");
+     					consolelog("Input element is good!");              
+              consolelog("Submitting the form...");
      					input.value = formNode.code.value;
      					form.submit();
               return true;
