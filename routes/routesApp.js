@@ -72,7 +72,7 @@ router.get('/data', protect, function(req, res, next) {
   data.find({}, { sort: { 'added': -1 } } ).toArray( function( err, entries ){
   	if( err ) return next( err );
 
-  	entries.map( function( entry ){
+    entries.map( function( entry ){
   	  //entry.data = entry.data.split("\n").join("<br />");
     	// Add <br/> for each newline
     	return entry;
