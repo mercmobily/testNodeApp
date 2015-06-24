@@ -3,7 +3,7 @@ TODO:
 
 SERVER
   [X] Add waiting page as optional page, make it activate after 5 seconds of going to specific URL
-  [X] Enable MongoDB 
+  [X] Enable MongoDB
   [X] Log each form post
   [X] Write page to show logs, most recent first, showing all submitted fields
   [X] Make sure logs for sent forms appear too
@@ -24,11 +24,11 @@ CLIENT
     [X] Find visible <input> in form
     [X] Submit code into form programmatically
   [X] Test the hell out of it
-  [X] Add submission data routes to server 
+  [X] Add submission data routes to server
   [X] Add button to send logs to server
-  [X] Add timestamp to each line 
+  [X] Add timestamp to each line
   [X] Improve interface (add menu for all functionality at the top)
-  [X] Improve paths, 
+  [X] Improve paths,
     * /app path (app/main, app/data, app/data_reset, app/data_add)
     * /form path (form/main, form/logs/ form/logs_reset, form/stop, form/serve, form/notready)
   [X] Change titles of each page to reflect what they are
@@ -51,12 +51,12 @@ IMPROVEMENTS
   HARDEN
   [X] Check that Date.parse will ALWAYS work on Date header http://stackoverflow.com/questions/30420816/how-to-safely-parse-the-date-http-header-in-javascript
 
-  [X] Improve logging: response header, first page, changed page, etc.  
+  [X] Improve logging: response header, first page, changed page, etc.
   [X] Check that logs are sucessfully sent even if they are > 20Mb
 
   [X] Deal with redirects, in header OR in meta. Change example form
   [X] Deal with form changing a little, but without form itself -- which should trigger reload
-  
+
 
 NEXT YEAR
 ---------

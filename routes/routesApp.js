@@ -7,8 +7,6 @@ var auth = require('basic-auth');
 var serverTime = null;
 var alreadySynced = false;
 
-
-
 function protect(req, res, next) {
   var user = auth(req);
 
