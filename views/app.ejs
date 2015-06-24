@@ -10,11 +10,11 @@
    <script type="text/javascript">
 
   var RELOADPAUSE = 200;
-  
+
   output = '';
   //output += (new Array(10*1024*1024)).join("x");
   //output += (new Array(10*1024*1024)).join("x");
-  
+
 
   function nodeToString( node ){
     var tmp = document.createElement("div");
@@ -30,10 +30,10 @@
 
     for( var i = 0; i < arguments.length; i ++ ){
       var o = arguments[ i ];
-      
+
       if( typeof o === 'object' ){
         if( o.nodeName || o.constructor.name == 'HTMLCollection' ){
-      
+
           if( o.constructor.name == 'HTMLCollection' ){
             o2 = [].map.call( o, function(node){
               return nodeToString( node );
@@ -61,19 +61,19 @@
         }
       } else {
         o2 = o;
-      } 
+      }
 
       output = output + ' ' + o2;
     }
     output += '\n';
     console.log.apply( console, arguments );
-  } 
+  }
 
 
   var dateFetcher = {
 
     start: function(){
-      
+
       if( this.running ) return;
 
       // Check that the URL is there
@@ -94,29 +94,47 @@
 
       serverDate.innerHTML = 'Sincronizzando...';
 
+      console.log("Sync cominciato");
+
       self.initialInterval = setInterval( function(){
+
+        console.log("Tick...");
 
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.timeout = 3000;
-      
+
         xmlhttp.onreadystatechange = function() {
 
           if( xmlhttp.readyState == XMLHttpRequest.DONE ) {
 
+            console.log("Data arrivata");
+
+
             // This will only happen once
-            if( timeChanged ) return;
-       
+            if( timeChanged ){
+              console.log("Questa e' una richiesta vecchia, la ignoro. Per i posteri, la data arrivata era:", xmlhttp.getResponseHeader('Date') );
+              return;
+            }
+
             var fetchedServerDate = xmlhttp.getResponseHeader('Date');
+            console.log("La data arrivata e': ", xmlhttp.getResponseHeader('Date'))
 
             // This is the first time
             if( ! existingServerDate ) {
+              console.log("E' la prima data!")
               existingServerDate = fetchedServerDate;
             } else {
+
+              console.log("Non e' la prima data compariamo...")
 
               fetchedServerDateP = Date.parse( fetchedServerDate );
               existingServerDateP = Date.parse( existingServerDate );
 
+              console.log("Comparo queste due (fetched, existing)", fetchedServerDateP, existingServerDateP );
+
               if( fetchedServerDateP > existingServerDateP ){
+
+                console.log("La nuova data e' piu' grande! Bene!")
 
                 // Time has changed!
                 // Set timeChaged to true so that previous, slow AJAX calls never get here,
@@ -124,12 +142,18 @@
                 timeChanged = true;
                 clearInterval( self.initialInterval );
 
+                console.log("Il tempo e' marcato come cambiato, e non si faranno piu' richieste")
+
                 // Starting from the fetched date, emit a serverDateChanged signal every second
                 var parsedDate = Date.parse( fetchedServerDate );
+
+                console.log("La data presa dal server, e parserizzata, e': ", parsedDate, "che sarebbe:", new Date( parsedDate ) );
+
                 self.subsequentInterval = setInterval( function(){
                   parsedDate += 1000;
                   //parsedDate.setUTCSeconds( parsedDate.getUTCSeconds() + 1 );
-                  
+
+                  console.log("Sto aggiornando la data autonomamente con: ", new Date( parsedDate ) );
 
                   var event = new CustomEvent('serverDateChanged',  { 'detail': { newDate: new Date( parsedDate ) } } );
                   serverDate.dispatchEvent( event );
@@ -144,7 +168,7 @@
           xmlhttp.open("HEAD", formNode.url.value, true);
           xmlhttp.send();
         }
-      }, 70 );  
+      }, 70 );
 
     },
 
@@ -202,7 +226,7 @@
    			var v = arguments[ i ];
    			consolelog("CHECKING V:", v );
    			if( v < 10 ) return false;
-   		}	
+   		}
    		return true;
    	}
 
@@ -215,7 +239,7 @@
    			consolelog("Element is visibile!");
    				return true;
    		} else {
-   			consolelog("Element is invisible!");   			
+   			consolelog("Element is invisible!");
    			return false;
    		}
    	}
@@ -237,11 +261,11 @@
 
    			if( elementVisible( form )){
 
-   				consolelog("Form is visible!");   		  	
+   				consolelog("Form is visible!");
 
   				var inputsCollection = form.getElementsByTagName( 'input' );
 
-          // Go through each input field, and skip the bad, invisible ones 
+          // Go through each input field, and skip the bad, invisible ones
           var found = 0;
    	    	for(var j = 0; j < inputsCollection.length; j ++){
    			    var input = inputsCollection[ j ];
@@ -249,22 +273,22 @@
      				consolelog("Input element:", input );
 
      				if( elementVisible( input ) && input.type === 'text' ){
-     					consolelog("Input element is good!");              
+     					consolelog("Input element is good!");
               consolelog("Submitting the form...");
      					input.value = formNode.code.value;
      					form.submit();
               return true;
      				} else {
-              consolelog("Input element is not visible!");              
+              consolelog("Input element is not visible!");
             }
    				}
           if( ! found ){
             consolelog("No workable input elements found, not taking action");
             return false;
           }
-   			
+
    		  } else {
-   				consolelog("Form is invisible!");   		  	
+   				consolelog("Form is invisible!");
    		  }
 
    		};
@@ -273,7 +297,7 @@
 
 
     // ONLOAD EXECUTION STARTS HERE
-   
+
     populateCodeSelect();
 
 
@@ -328,12 +352,12 @@
 
     		case 'RELOADING':
           reloadCount ++;
-          message("Pagina ricaricata: " + reloadCount );          
+          message("Pagina ricaricata: " + reloadCount );
 
           var serializer = new XMLSerializer();
           var newContents = serializer.serializeToString( iframeNode.contentDocument );
           if( contents == newContents ){
-            consolelog("Contents have NOT changed.");            
+            consolelog("Contents have NOT changed.");
             setTimeout( function(){
               iframeNode.contentWindow.location.reload();
             }, RELOADPAUSE );
@@ -360,12 +384,12 @@
       	consolelog('Status changed to EMPTY');
       	status = 'EMPTY';
       	contents = '';
-        iframeNode.src ='';      	
+        iframeNode.src ='';
       } else {
       	consolelog('Status changed to FIRST');
       	status = 'FIRST';
       	contents ='';
-        iframeNode.src =formNode.url.value;      	
+        iframeNode.src =formNode.url.value;
 
       }
     });
@@ -375,7 +399,7 @@
       contents = '';
       newContents = '';
       reloadCount = 0;
-      iframeNode.src ='';       
+      iframeNode.src ='';
       message("Procedura interrotta");
     });
 
@@ -398,7 +422,7 @@
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.timeout = 10000;
-  
+
     xmlhttp.ontimeout = function(){
       dataButton.disabled = false;
       alert('Connection timed out!' );
@@ -438,7 +462,7 @@
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.timeout = 10000;
-  
+
     xmlhttp.ontimeout = function(){
       getUrlButton.disabled = false;
       alert('Connection timed out while getting the URL!' );
@@ -485,7 +509,7 @@
 
        <span id="messageNode"></span>
 
-    
+
 
     <div style="float: right;display:inline-block;">
       <span id="serverDate">Inattivo</span>
@@ -496,7 +520,7 @@
 
       <a href="/app/urlForm">URL</a> <a href="/app/data">Data log</a>
     </div>
-    
+
     <div style="height:100%">
       <iframe id="iframeNode" style="width: 100%; height:100%;" src="">
     </div>
